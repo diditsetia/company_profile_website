@@ -1,6 +1,0 @@
-# edit menjadi .env
-
-JWT_SECRET=superrahasia123
-PORT=4000
-MONGO_URI="mongodb+srv://diditsb007_db_user:PUFWYgQFQ0OriKLM@webprofile-cluster.aag7xzr.mongodb.net/webprofile?retryWrites=true&w=majority"
-
