@@ -560,7 +560,11 @@ app.put(
       if (status) project.status = status;
       if (team) project.team = team;
       if (client) project.client = client;
-      if (videoProject) project.videoProject = videoProject;
+      // if (videoProject) project.videoProject = videoProject;
+
+      if (videoProject !== undefined) {
+        project.videoProject = videoProject;
+      }
 
       // Update thumbnail jika ada file baru
       if (req.files?.thumbnail) {

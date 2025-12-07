@@ -311,6 +311,9 @@ const HomeScreen = () => {
                 <div
                   key={project._id}
                   style={{ cursor: "pointer", width: "100%", minHeight: 100 }}
+                  onClick={() =>
+                    router.push(`/project/detailproject?id=${project._id}`)
+                  }
                 >
                   <div style={{ width: "100%", overflow: "hidden" }}>
                     <img
