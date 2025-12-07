@@ -1,176 +1,206 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
-import { FaEnvelope, FaLock, FaEyeSlash, FaEye, FaUser } from "react-icons/fa";
+import { useState } from "react";
+import { FaLock, FaEyeSlash, FaEye } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const ChangePassword = () => {
-  const [fullname, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const [oldpassword, setOldPassword] = useState("");
+  const [newpassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
+  const [newshowPassword, setNewShowPassword] = useState(false);
+  const [oldshowPassword, setOldShowPassword] = useState(false);
+  const [confirmNewshowPassword, setConfirmNewShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
+
+  // ==== VALIDASI PASSWORD ====
+  const validatePassword = (password) => {
+    const regex = {
+      lower: /[a-z]/,
+      upper: /[A-Z]/,
+      number: /[0-9]/,
+      symbol: /[!@#$%^&*(),.?":{}|<>]/,
+    };
+
+    const errorList = {};
+
+    if (!regex.lower.test(password)) errorList.lower = "Minimal 1 huruf kecil";
+    if (!regex.upper.test(password)) errorList.upper = "Minimal 1 huruf besar";
+    if (!regex.number.test(password)) errorList.number = "Minimal 1 angka";
+    if (!regex.symbol.test(password))
+      errorList.symbol = "Minimal 1 simbol / karakter spesial";
+    if (password.length < 12) errorList.length = "Minimal panjang 12 karakter";
+
+    return errorList;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let newErrors = {};
+
+    if (!oldpassword) newErrors.oldpassword = "Old password wajib diisi";
+
+    const passErrors = validatePassword(newpassword);
+    if (Object.keys(passErrors).length > 0) {
+      newErrors.newpassword = Object.values(passErrors).join(", ");
+    }
+
+    if (newpassword !== confirmPassword) {
+      newErrors.confirmPassword = "Confirm password tidak sama";
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    try {
+      const res = await fetch("http://localhost:4000/reset-password", {
+        method: "PUT",
+        credentials: "include", // 🔥 PENTING! Mengirim cookie JWT
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          oldPassword: oldpassword,
+          newPassword: newpassword,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Gagal mengganti password");
+        return;
+      }
+
+      alert("Password berhasil diubah. Anda akan logout...");
+      await handleLogout(); // logout otomatis
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan jaringan");
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch("http://localhost:4000/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    // Hapus data user (kalau ada)
+    localStorage.removeItem("user");
+
+    router.push("/admin");
+  };
 
   return (
     <div className="w-screen h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-md p-10 rounded-xl shadow-sm">
-        {/* Logo */}
         <div className="flex items-center gap-2 mb-10 justify-center">
-          {/* <div className="bg-[#FF0000] w-8 h-8 rounded-md"></div>
-                  <h1 className="text-2xl font-bold text-gray-800">Javis</h1> */}
           <img src="/images/lumbungmuncul_logo.png" width="70px" />
         </div>
 
-        {/* Title */}
         <h2 className="text-3xl font-bold text-gray-800 mb-3 text-center">
-          Register Account
+          Change Password
         </h2>
         <p className="text-gray-500 text-sm mb-8 text-center">
-          Please register your account:
+          Change your account password:
         </p>
 
-        <form>
+        <form onSubmit={handleSubmit}>
+          {/* OLD PASSWORD */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm mb-2">
-              Full Name
+              Old Password
             </label>
             <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
-              <FaUser className="text-gray-400 mr-2" />
-              <input
-                type="name"
-                placeholder="Enter your Full Name"
-                className="w-full outline-none text-sm bg-transparent"
-              />
-            </div>
-            {/* {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-            )} */}
-          </div>
-          {/* Email */}
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm mb-2">Email</label>
-            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
-              <FaEnvelope className="text-gray-400 mr-2" />
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full outline-none text-sm bg-transparent"
-              />
-            </div>
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm mb-2">Password</label>
-            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
               <FaLock className="text-gray-400 mr-2" />
-              {/* <input
-                        placeholder="Enter your password"
-                        className="w-full outline-none text-sm bg-transparent"
-                      /> */}
               <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                type={oldshowPassword ? "text" : "password"}
+                value={oldpassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                placeholder="Enter your old password"
                 className="w-full outline-none text-sm bg-transparent"
-                disabled={loading}
               />
-
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="focus:outline-none"
-                disabled={loading}
+                onClick={() => setOldShowPassword(!oldshowPassword)}
               >
-                {showPassword ? (
-                  <FaEye className="text-gray-500" />
-                ) : (
-                  <FaEyeSlash className="text-gray-500" />
-                )}
+                {oldshowPassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            {errors.oldpassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.oldpassword}</p>
             )}
           </div>
 
+          {/* NEW PASSWORD */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm mb-2">
+              New Password
+            </label>
+            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
+              <FaLock className="text-gray-400 mr-2" />
+              <input
+                type={newshowPassword ? "text" : "password"}
+                value={newpassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+                className="w-full outline-none text-sm bg-transparent"
+              />
+              <button
+                type="button"
+                onClick={() => setNewShowPassword(!newshowPassword)}
+              >
+                {newshowPassword ? <FaEye /> : <FaEyeSlash />}
+              </button>
+            </div>
+            {errors.newpassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.newpassword}</p>
+            )}
+          </div>
+
+          {/* CONFIRM PASSWORD */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm mb-2">
               Confirm Password
             </label>
             <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
               <FaLock className="text-gray-400 mr-2" />
-              {/* <input
-                        placeholder="Enter your password"
-                        className="w-full outline-none text-sm bg-transparent"
-                      /> */}
               <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Confirm your password"
+                type={confirmNewshowPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
                 className="w-full outline-none text-sm bg-transparent"
-                disabled={loading}
               />
-
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="focus:outline-none"
-                disabled={loading}
+                onClick={() =>
+                  setConfirmNewShowPassword(!confirmNewshowPassword)
+                }
               >
-                {showPassword ? (
-                  <FaEye className="text-gray-500" />
-                ) : (
-                  <FaEyeSlash className="text-gray-500" />
-                )}
+                {confirmNewshowPassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword}
+              </p>
             )}
           </div>
-
-          {/* Remember & Forgot */}
-          {/* <div className="flex items-center justify-between mb-8 text-sm">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="accent-[#0F3D3E]" />
-              Remember me
-            </label>
-            <a href="#" className="text-[#0F3D3E] hover:underline">
-              Forgot Password?
-            </a>
-          </div> */}
-
-          {/* Button */}
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-[#354d34] text-white py-3 rounded-lg font-semibold hover:bg-[#354d34]/70 transition ${
-              loading ? "opacity-80 cursor-not-allowed" : ""
-            }`}
+            className="w-full bg-[#354d34] text-white py-3 rounded-lg font-semibold hover:bg-[#354d34]/70 transition"
           >
-            Register
+            {loading ? "Processing..." : "Submit"}
           </button>
         </form>
-
-        <p className="text-center text-sm text-gray-500 mt-8">
-          Don’t have an account?{" "}
-          <a
-            href="/admin"
-            className="text-[#0F3D3E] font-medium hover:underline"
-          >
-            Log in
-          </a>
-        </p>
       </div>
     </div>
   );

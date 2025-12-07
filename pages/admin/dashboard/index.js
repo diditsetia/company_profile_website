@@ -3,7 +3,9 @@ import AdminLayout from "../layout";
 const DashboardAdmin = () => {
   return (
     <AdminLayout>
-      <h1>Di Dashboard</h1>
+      <span className="HammersmithOne text-2xl">
+        Selamat Datang di Dashboard Admin
+      </span>
     </AdminLayout>
   );
 };

@@ -650,3 +650,53 @@ app.delete("/projects/:id", async (req, res) => {
     });
   }
 });
+
+// ---------------------- RESET PASSWORD ----------------------
+app.put("/reset-password", verifyToken, async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Old password dan new password wajib diisi",
+      });
+    }
+
+    // Ambil user berdasarkan token
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+
+    // Cek old password benar atau tidak
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Old password salah",
+      });
+    }
+
+    // Hash password baru
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password berhasil diupdate",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Kesalahan server",
+      error: err.message,
+    });
+  }
+});

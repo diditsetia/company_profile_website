@@ -1,6 +1,20 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
+Note ----->
+kalua env hilang di backend buat file bernama
+.env dengan isi (
+JWT_SECRET=superrahasia123
+PORT=4000
+MONGO_URI="mongodb+srv://diditsb007_db_user:PUFWYgQFQ0OriKLM@webprofile-cluster.aag7xzr.mongodb.net/webprofile?retryWrites=true&w=majority"
+)
+
+Untuk Admin akun 
+
+email : didit@example.com
+pass: Companyprofile#77
+
+<------endnote
 
 First, run the development server:
 

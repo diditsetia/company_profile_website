@@ -5,61 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 
-// import {
-//   BoxCubeIcon,
-//   CalenderIcon,
-//   ChevronDownIcon,
-//   GridIcon,
-//   HorizontaLDots,
-//   ListIcon,
-//   PageIcon,
-//   PieChartIcon,
-//   PlugInIcon,
-//   TableIcon,
-//   UserCircleIcon,
-// } from "../icons/index";
-
 import SidebarWidget from "./SidebarWidget";
-
-// =======================
-// NAV ITEMS (NO TYPES)
-// =======================
-
-// const navItems = [
-//   {
-//     icon: <GridIcon />,
-//     name: "Dashboard",
-//     subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-//   },
-//   {
-//     icon: <CalenderIcon />,
-//     name: "Calendar",
-//     path: "/calendar",
-//   },
-//   {
-//     icon: <UserCircleIcon />,
-//     name: "User Profile",
-//     path: "/profile",
-//   },
-//   {
-//     name: "Forms",
-//     icon: <ListIcon />,
-//     subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-//   },
-//   {
-//     name: "Tables",
-//     icon: <TableIcon />,
-//     subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-//   },
-//   {
-//     name: "Pages",
-//     icon: <PageIcon />,
-//     subItems: [
-//       { name: "Blank Page", path: "/blank", pro: false },
-//       { name: "404 Error", path: "/error-404", pro: false },
-//     ],
-//   },
-// ];
 
 const navItems = [
   {
@@ -77,6 +23,11 @@ const navItems = [
     icon: null,
     name: "Project",
     path: "/admin/project",
+  },
+  {
+    icon: null,
+    name: "Change Password",
+    path: "/admin/changepassword",
   },
 ];
 
@@ -163,17 +114,7 @@ const AppSidebar = () => {
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span className="menu-item-text">{nav.name}</span>
               )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                // <ChevronDownIcon
-                //   className={`ml-auto w-5 h-5 transition-transform ${
-                //     openSubmenu?.type === menuType &&
-                //     openSubmenu?.index === index
-                //       ? "rotate-180 text-brand-500"
-                //       : ""
-                //   }`}
-                // />
-                <div></div>
-              )}
+              {(isExpanded || isHovered || isMobileOpen) && <div></div>}
             </button>
           ) : (
             nav.path && (
@@ -302,34 +243,19 @@ const AppSidebar = () => {
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              <div style={{ display: "flex" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <Image
-                  src="/images/logo/logo-icon.svg"
+                  src="/images/lumbungmuncul_logo.png"
                   alt="Logo"
                   width={32}
                   height={32}
                 />
-                <h1>Dashboard Admin</h1>
+                <h1 style={{ margin: 0 }}>Dashboard Admin</h1>
               </div>
-              {/* <h1>Logo</h1> */}
-              {/* <Image
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-                className="dark:hidden"
-              />
-              <Image
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-                className="hidden dark:block"
-              /> */}
             </>
           ) : (
             <Image
-              src="/images/logo/logo-icon.svg"
+              src="/images/lumbungmuncul_logo.png"
               alt="Logo"
               width={32}
               height={32}
@@ -359,24 +285,6 @@ const AppSidebar = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-
-            {/* <div>
-              <h2
-                className={`mb-4 text-xs uppercase text-gray-400 flex ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
-                ) : (
-                    <HorizontaLDots />
-                  <div></div>
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div> */}
           </div>
         </nav>
 

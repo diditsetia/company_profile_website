@@ -135,8 +135,6 @@ const LoginPage = () => {
       <div className="bg-white w-full max-w-md p-10 rounded-xl shadow-sm">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-10 justify-center">
-          {/* <div className="bg-[#FF0000] w-8 h-8 rounded-md"></div>
-          <h1 className="text-2xl font-bold text-gray-800">Javis</h1> */}
           <img src="/images/lumbungmuncul_logo.png" width="70px" />
         </div>
 
@@ -210,17 +208,9 @@ const LoginPage = () => {
               Remember me
             </label>
             <a href="#" className="text-[#0F3D3E] hover:underline">
-              Change Password?
+              Forgot Password?
             </a>
           </div>
-
-          {/* Button */}
-          {/* <button
-            type="submit"
-            className="w-full bg-[#354d34] text-white py-3 rounded-lg font-semibold hover:bg-[#354d34]/70 transition"
-          >
-            Log in
-          </button> */}
 
           <button
             type="submit"
@@ -235,10 +225,7 @@ const LoginPage = () => {
 
         <p className="text-center text-sm text-gray-500 mt-8">
           Don’t have an account?{" "}
-          <a
-            href="/admin/register"
-            className="text-[#0F3D3E] font-medium hover:underline"
-          >
+          <a href="" className="text-[#0F3D3E] font-medium hover:underline">
             Create an account
           </a>
         </p>
